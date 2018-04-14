@@ -1,1 +1,9 @@
+.user-board-container {
+  max-width:600px;
+  margin:auto;
+  padding: 10px;
+}
 
+.user-text-field {
+  width:100%;
+}
