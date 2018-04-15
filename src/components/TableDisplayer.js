@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import RaisedButton from 'material-ui/RaisedButton';
 import {
   Table,
   TableBody,
@@ -21,7 +22,10 @@ export default class TableDisplayer extends Component {
         {this.props.type === 'user' ? <TableRowColumn>{element.properties.email}</TableRowColumn> : null}
         <TableRowColumn>
           <Link to={`${this.props.url}${element.identity.low}`} >
-            see
+            <RaisedButton
+              label="See"
+              primary
+            />
           </Link>
         </TableRowColumn>
       </TableRow>

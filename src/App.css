@@ -3,6 +3,9 @@
   margin:auto;
   padding: 10px;
 }
+a {
+  text-decoration: none;
+}
 
 .add-user-container {
   max-width:600px;
@@ -24,4 +27,14 @@
 }
 .user-table-management-team {
   width:40%;
+}
+
+.teams-user-container {
+  display:flex;
+  justify-content: flex-start;
+}
+
+.team-user-container {
+  width: 23%;
+  margin: 1%;
 }

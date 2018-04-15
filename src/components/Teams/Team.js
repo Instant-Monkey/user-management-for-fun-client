@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import TableUserTeam from './TableUserTeam';
 import RaisedButton from 'material-ui/RaisedButton';
+import TableUserTeam from './TableUserTeam';
 
 const buttonStyle = {
   margin: 12,
@@ -20,8 +20,7 @@ export default class Team extends Component {
     this.fetchUsers = this.fetchUsers.bind(this);
     this.usersListOnSelectedRow = this.usersListOnSelectedRow.bind(this);
     this.usersFromTeamOnSelectedRow = this.usersFromTeamOnSelectedRow.bind(this);
-    this.addToTeam = this.addToTeam.bind(this);
-    this.removeFromTeam = this.removeFromTeam.bind(this);
+    this.manageTeam = this.manageTeam.bind(this);
   }
   componentDidMount() {
     this.fetchUsers();
@@ -53,17 +52,25 @@ export default class Team extends Component {
     Promise.all([allUsers, AllUsersFromTeam]).then((values) => {
       const unfilteredUsersList = values[0];
       const usersFromTeam = values[1];
-      const usersList = unfilteredUsersList.filter(e => usersFromTeam.indexOf(e) < 0);
+      const usersList = unfilteredUsersList.filter(e => (
+        usersFromTeam.findIndex(teamuser => teamuser.identity.low === e.identity.low) === -1
+      ));
       this.setState({
         usersList,
         usersFromTeam,
       });
     });
   }
-  addToTeam() {
+  manageTeam(action) {
     const promises = [];
-    this.state.usersListSelected.forEach(user => (
-      promises.push(fetch(`${process.env.REACT_APP_API_URL}/teams/${this.props.match.params.id}/addUser`, {
+    let source = [];
+    if (action === 'addUser') {
+      source = this.state.usersListSelected;
+    } else if (action === 'removeUser') {
+      source = this.state.usersFromTeamSelected;
+    }
+    source.forEach(user => (
+      promises.push(fetch(`${process.env.REACT_APP_API_URL}/teams/${this.props.match.params.id}/${action}`, {
         method: 'POST',
         headers: {
           'Content-type': 'application/json',
@@ -78,12 +85,11 @@ export default class Team extends Component {
       this.setState({
         usersListSelected: [],
         usersListSelectedRow: [],
+        usersFromTeamSelected: [],
+        usersFromTeamSelectedRow: [],
       });
       return this.fetchUsers();
     });
-  }
-  removeFromTeam() {
-
   }
   render() {
     return (
@@ -97,7 +103,7 @@ export default class Team extends Component {
               primary
               disabled={this.state.usersFromTeamSelected.length === 0}
               style={buttonStyle}
-              onClick={this.removeFromTeam}
+              onClick={() => this.manageTeam('removeUser')}
             />
             <TableUserTeam
               data={this.state.usersFromTeam}
@@ -106,13 +112,13 @@ export default class Team extends Component {
             />
           </div>
           <div className="user-table-management-team">
-            <h2>Other users</h2>
+            <h2>Users not in the team </h2>
             <RaisedButton
               label="Add to the team"
               primary
               disabled={this.state.usersListSelected.length === 0}
               style={buttonStyle}
-              onClick={this.addToTeam}
+              onClick={() => this.manageTeam('addUser')}
             />
             <TableUserTeam
               data={this.state.usersList}

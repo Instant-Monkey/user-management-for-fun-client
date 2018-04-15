@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import TeamsBoard from '../Teams/TeamsBoard.js';
+import TeamUser from './TeamUser';
+import Divider from 'material-ui/Divider';
 
 export default class User extends Component {
   displayName() {
@@ -16,6 +17,7 @@ export default class User extends Component {
     this.displayOrganization = this.displayOrganization.bind(this);
     this.displayName = this.displayName.bind(this);
     this.getTeams = this.getTeams.bind(this);
+    this.renderTeams = this.renderTeams.bind(this);
   }
   componentDidMount() {
     fetch(`${process.env.REACT_APP_API_URL}/users/${this.props.match.params.id}/groups`)
@@ -26,7 +28,7 @@ export default class User extends Component {
   }
   getTeams() {
     if (this.state.groups.length > 0) {
-      const teams = this.state.groups.filter(orga => orga.labels[0] === 'Teams');
+      const teams = this.state.groups.filter(orga => orga.labels[0] === 'Team');
       if (teams.length === 0) {
         return null;
       }
@@ -40,15 +42,27 @@ export default class User extends Component {
       if (typeof organization === 'undefined') {
         return '';
       }
-      return `from : ${organization.properties.name}`;
+      return `from ${organization.properties.name}`;
     }
     return '';
+  }
+
+  renderTeams() {
+    const teams = this.getTeams();
+    return teams ? teams.map(team => <TeamUser team={team} />) : null;
   }
 
   render() {
     return (
       <div>
         <h1>{`User : ${this.displayName()} ${this.displayOrganization()}`}</h1>
+        <Divider />
+        {this.getTeams() ?
+          <h2> {`The teams of ${this.displayName()} : `} </h2>
+          : <h2> {`${this.displayName()} has no team yet `}</h2>}
+        <div className="teams-user-container">
+          {this.renderTeams()}
+        </div>
       </div>
     );
   }
