@@ -1,5 +1,5 @@
-.user-board-container {
-  max-width:1480px;
+.user-board-container, .id-page {
+  max-width:1280px;
   margin:auto;
   padding: 10px;
 }
@@ -10,6 +10,18 @@
   padding: 10px;
 }
 
+.app-bar {
+  text-transform: capitalize;
+}
+
 .user-text-field {
   width:100%;
+}
+
+.user-table-management-team-wrapper{
+  display:flex;
+  justify-content: space-between;
+}
+.user-table-management-team {
+  width:40%;
 }

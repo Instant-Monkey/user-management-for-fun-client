@@ -9,18 +9,19 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 
-export default class TableDisplayer extends Component {
+export default class TableUserTeam extends Component {
   constructor(props) {
     super(props);
+    this.state = {}
     this.renderRows = this.renderRows.bind(this);
   }
   renderRows() {
-    return this.props.data.map(element => (
-      <TableRow key={element.identity.low}>
-        <TableRowColumn>{element.properties.name}</TableRowColumn>
-        {this.props.type === 'user' ? <TableRowColumn>{element.properties.email}</TableRowColumn> : null}
+    return this.props.data.map((user, i) => (
+      <TableRow key={user.identity.low} selected={this.props.selectedRows.indexOf(i) >= 0}>
+        <TableRowColumn>{user.properties.name}</TableRowColumn>
+        <TableRowColumn>{user.properties.email}</TableRowColumn>
         <TableRowColumn>
-          <Link to={`${this.props.url}${element.identity.low}`} >
+          <Link to={`/users/${user.identity.low}`} >
             see
           </Link>
         </TableRowColumn>
@@ -29,18 +30,15 @@ export default class TableDisplayer extends Component {
   }
   render() {
     return (
-      <Table>
-        <TableHeader
-          displaySelectAll={false}
-          adjustForCheckbox={false}
-        >
+      <Table multiSelectable onRowSelection={this.props.onSelectedRow}>
+        <TableHeader>
           <TableRow>
             <TableHeaderColumn>Name</TableHeaderColumn>
-            {this.props.type === 'user' ? <TableHeaderColumn>eMail</TableHeaderColumn> : null}
+            <TableHeaderColumn>eMail</TableHeaderColumn>
             <TableHeaderColumn>Actions</TableHeaderColumn>
           </TableRow>
         </TableHeader>
-        <TableBody displayRowCheckbox={false}>
+        <TableBody deselectOnClickaway={false}>
           {this.renderRows()}
         </TableBody>
       </Table>
