@@ -1,4 +1,10 @@
 .user-board-container {
+  max-width:1480px;
+  margin:auto;
+  padding: 10px;
+}
+
+.add-user-container {
   max-width:600px;
   margin:auto;
   padding: 10px;

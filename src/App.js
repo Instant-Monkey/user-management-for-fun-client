@@ -3,9 +3,9 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import AppBar from 'material-ui/AppBar';
 
 
-import OrganizationsBoard from './components/OrganizationsBoard';
-import TeamsBoard from './components/TeamsBoard';
-import UsersBoard from './components/UsersBoard';
+import OrganizationsBoard from './components/Organizations/OrganizationsBoard';
+import TeamsBoard from './components/Teams/TeamsBoard';
+import UsersBoard from './components/Users/UsersBoard';
 import Menu from './components/Menu';
 
 import './App.css';

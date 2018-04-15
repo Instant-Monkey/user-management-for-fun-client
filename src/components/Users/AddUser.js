@@ -9,15 +9,19 @@ import { Card, CardActions, CardHeader } from 'material-ui/Card';
 const style = {
   textField: {
     width: '80%',
-    padding: '16px',
-    height: '40px',
+    padding: '24px',
+    height: '60px',
   },
   cardHeader: {
-    padding: ' 8px 16px',
+    padding: ' 14px 24px',
   },
 };
 
-export default class UsersBoard extends Component {
+export default class AddUser extends Component {
+  static validateEmail(email) {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  }
   constructor(props) {
     super(props);
     this.state = {
@@ -25,46 +29,41 @@ export default class UsersBoard extends Component {
       userEmailValue: '',
       snackbarOpen: false,
       snackbarMessage: '',
+      errorEmailText: '',
     };
-    this.handleNameChange = this.handleNameChange.bind(this);
-    this.handleEmailChange = this.handleEmailChange.bind(this);
+    this.handleTextChange = this.handleTextChange.bind(this);
     this.addUser = this.addUser.bind(this);
+    this.closeSnackbar = this.closeSnackbar.bind(this);
   }
-  handleNameChange(e) {
-    this.setState({
-      userNameValue: e.target.value,
-    });
-  }
-  handleEmailChange(e) {
-    this.setState({
-      userEmailValue: e.target.value,
-    });
+  handleTextChange(value, target) {
+    const newState = { errorEmailText: '' };
+    newState[target] = value;
+    this.setState(newState);
   }
   addUser() {
-    fetch(`${process.env.REACT_APP_API_URL}/users/new`, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: this.state.userNameValue,
-        email: this.state.userEmailValue,
-      }),
-    }).then(res => res.json())
-      .then(newUser => this.setState({
-        snackbarOpen: true,
-        userNameValue: '',
-        userEmailValue: '',
-        snackbarMessage: `${newUser.properties.name} was sucessfully added`,
-      }));
+    const {
+      userNameValue,
+      userEmailValue,
+    } = this.state;
+    if (!AddUser.validateEmail(userEmailValue)) {
+      return this.setState({
+        errorEmailText: 'invalid email',
+      });
+    }
+    const fetchedUser = this.props.addUser(userNameValue, userEmailValue);
+    return fetchedUser.then(newState => this.setState(newState));
+  }
+  closeSnackbar() {
+    this.setState({ snackbarOpen: false, snackbarMessage: '' });
   }
   render() {
     const {
       userNameValue,
       userEmailValue,
+      errorEmailText,
     } = this.state;
     return (
-      <div className="user-board-container">
+      <div className="add-user-container">
         <Card>
           <CardHeader
             title="Add a user"
@@ -74,13 +73,14 @@ export default class UsersBoard extends Component {
             floatingLabelText="Enter name"
             style={style.textField}
             value={userNameValue}
-            onChange={this.handleNameChange}
+            onChange={e => this.handleTextChange(e.target.value, 'userNameValue')}
           />
           <TextField
             floatingLabelText="Enter email"
+            errorText={errorEmailText}
             style={style.textField}
             value={userEmailValue}
-            onChange={this.handleEmailChange}
+            onChange={e => this.handleTextChange(e.target.value, 'userEmailValue')}
           />
           <CardActions>
             <FlatButton
@@ -93,11 +93,12 @@ export default class UsersBoard extends Component {
           open={this.state.snackbarOpen}
           message={this.state.snackbarMessage}
           autoHideDuration={4000}
+          onRequestClose={this.closeSnackbar}
         />
       </div>
     );
   }
 }
-UsersBoard.propTypes = {
-
+AddUser.propTypes = {
+  addUser: PropTypes.func.isRequired,
 };
